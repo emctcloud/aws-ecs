@@ -3,10 +3,10 @@ variable "aws_region" {
   default = "us-east-1"
 }
 variable "cidr_block" {
-  type = string
+  type        = string
   description = "CIDR Block"
 }
 variable "project_name" {
-  type = string
+  type        = string
   description = "Project Name"
 }
