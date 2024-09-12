@@ -36,7 +36,6 @@ resource "aws_subnet" "ecs_sub_priv_1b" {
     }
   )
 }
-
 resource "aws_subnet" "ecs_sub_pub_1a" {
   vpc_id            = aws_vpc.ecs-vpc.id
   cidr_block        = cidrsubnet(var.cidr_block, 8, 3)
@@ -56,4 +55,55 @@ resource "aws_subnet" "ecs_sub_pub_1b" {
       Name = "${var.project_name}-pub-sub-1b"
     }
   )
+}
+resource "aws_route" "ecs_access" {
+  destination_cidr_block = "0.0.0.0/0"
+  route_table_id         = aws_vpc.ecs-vpc.main_route_table_id
+  gateway_id             = aws_internet_gateway.igw.id
+}
+resource "aws_route_table" "ecs_pub_route_table" {
+  vpc_id = aws_vpc.ecs-vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+  tags = merge(
+    local.tags, {
+      Name = "${var.project_name}-rtb"
+    }
+  )
+}
+resource "aws_route_table" "ecs_priv_route_table" {
+  vpc_id = aws_vpc.ecs-vpc.id
+  tags = merge(
+    local.tags, {
+      Name = "${var.project_name}-rtb"
+    }
+  )
+}
+resource "aws_route_table_association" "ecs_rtb_priv_1a" {
+  subnet_id      = aws_subnet.ecs_sub_priv_1a.id
+  route_table_id = aws_route_table.ecs_priv_route_table.id
+}
+resource "aws_route_table_association" "ecs_rtb_priv_1b" {
+  subnet_id      = aws_subnet.ecs_sub_priv_1b.id
+  route_table_id = aws_route_table.ecs_priv_route_table.id
+}
+resource "aws_route_table_association" "ecs_rtb_pub_1a" {
+  subnet_id      = aws_subnet.ecs_sub_pub_1a.id
+  route_table_id = aws_route_table.ecs_pub_route_table.id
+}
+resource "aws_route_table_association" "ecs_rtb_pub_1b" {
+  subnet_id      = aws_subnet.ecs_sub_pub_1b.id
+  route_table_id = aws_route_table.ecs_pub_route_table.id
+}
+
+module "endpoints" {
+  source = "./modules/endpoints"
+  aws_region = var.aws_region
+  cidr_block = aws_vpc.ecs-vpc.cidr_block
+  private_rtb_ids = [aws_route_table.ecs_priv_route_table.id]
+  private_sub_ids = [aws_subnet.ecs_sub_priv_1a.id, aws_subnet.ecs_sub_priv_1b.id]
+  vpc_id = aws_vpc.ecs-vpc.id
+  vpc_name = "Endpoint-VPC"
 }
