@@ -99,11 +99,11 @@ resource "aws_route_table_association" "ecs_rtb_pub_1b" {
 }
 
 module "endpoints" {
-  source = "./modules/endpoints"
-  aws_region = var.aws_region
-  cidr_block = aws_vpc.ecs-vpc.cidr_block
+  source          = "./modules/endpoints"
+  aws_region      = var.aws_region
+  cidr_block      = aws_vpc.ecs-vpc.cidr_block
   private_rtb_ids = [aws_route_table.ecs_priv_route_table.id]
   private_sub_ids = [aws_subnet.ecs_sub_priv_1a.id, aws_subnet.ecs_sub_priv_1b.id]
-  vpc_id = aws_vpc.ecs-vpc.id
-  vpc_name = "Endpoint-VPC"
+  vpc_id          = aws_vpc.ecs-vpc.id
+  vpc_name        = "Endpoint-VPC"
 }
