@@ -16,3 +16,44 @@ resource "aws_internet_gateway" "igw" {
     }
   )
 }
+resource "aws_subnet" "ecs_sub_priv_1a" {
+  vpc_id            = aws_vpc.ecs-vpc.id
+  cidr_block        = cidrsubnet(var.cidr_block, 8, 1)
+  availability_zone = "${data.aws_region.current.name}a"
+  tags = merge(
+    local.tags, {
+      Name = "${var.project_name}-priv-sub-1a"
+    }
+  )
+}
+resource "aws_subnet" "ecs_sub_priv_1b" {
+  vpc_id            = aws_vpc.ecs-vpc.id
+  cidr_block        = cidrsubnet(var.cidr_block, 8, 2)
+  availability_zone = "${data.aws_region.current.name}b"
+  tags = merge(
+    local.tags, {
+      Name = "${var.project_name}-priv-sub-1b"
+    }
+  )
+}
+
+resource "aws_subnet" "ecs_sub_pub_1a" {
+  vpc_id            = aws_vpc.ecs-vpc.id
+  cidr_block        = cidrsubnet(var.cidr_block, 8, 3)
+  availability_zone = "${data.aws_region.current.name}a"
+  tags = merge(
+    local.tags, {
+      Name = "${var.project_name}-pub-sub-1a"
+    }
+  )
+}
+resource "aws_subnet" "ecs_sub_pub_1b" {
+  vpc_id            = aws_vpc.ecs-vpc.id
+  cidr_block        = cidrsubnet(var.cidr_block, 8, 4)
+  availability_zone = "${data.aws_region.current.name}b"
+  tags = merge(
+    local.tags, {
+      Name = "${var.project_name}-pub-sub-1b"
+    }
+  )
+}
