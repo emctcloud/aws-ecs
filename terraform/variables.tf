@@ -10,3 +10,7 @@ variable "project_name" {
   type        = string
   description = "Project Name"
 }
+variable "allowed_ip" {
+  description = "IP/CIDR"
+  type = string
+}
