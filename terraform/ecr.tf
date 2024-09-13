@@ -6,14 +6,13 @@ resource "aws_ecr_repository" "this" {
 
 resource "aws_ecr_lifecycle_policy" "this" {
   repository = aws_ecr_repository.this.name
-  policy = jsonencode({
+  policy     = jsonencode({
     rules = [{
       rulePriority = 1
       description  = "5 Images"
       action = {
         type = "expire"
       }
-
       selection = {
         tagStatus   = "any"
         countType   = "imageCountMoreThan"
@@ -23,10 +22,8 @@ resource "aws_ecr_lifecycle_policy" "this" {
   })
 }
 
-resource "terraform_data" "build_img" {
-  triggers_replace = {
-    hash = local.service_file_hash
-  }
+resource "null_resource" "build_and_push" {
+  depends_on = [aws_ecr_repository.this]
 
   provisioner "local-exec" {
     working_dir = var.app_folder
@@ -44,4 +41,8 @@ resource "terraform_data" "build_img" {
     working_dir = var.app_folder
     command     = "docker push ${aws_ecr_repository.this.repository_url}:${random_id.version.id}"
   }
+  triggers = {
+    hash = local.service_file_hash
+  }
 }
+
