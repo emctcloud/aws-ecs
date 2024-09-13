@@ -23,3 +23,13 @@ variable "key_name" {
   description = "SSH Key Pair"
   type = string
 }
+variable "app_folder" {
+  description = "Local App Folder"
+  type = string
+  default = "../"
+}
+variable "force_delete_repo" {
+  description = "Deleted Image"
+  type = bool
+  default = true
+}
