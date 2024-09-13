@@ -12,24 +12,24 @@ variable "project_name" {
 }
 variable "allowed_ip" {
   description = "IP/CIDR"
-  type = string
+  type        = string
 }
 variable "instance_type" {
   description = "EC2 instance type"
-  type = string
-  default = "t2.micro"
+  type        = string
+  default     = "t2.micro"
 }
 variable "key_name" {
   description = "SSH Key Pair"
-  type = string
+  type        = string
 }
 variable "app_folder" {
   description = "Local App Folder"
-  type = string
-  default = "../"
+  type        = string
+  default     = "../"
 }
 variable "force_delete_repo" {
   description = "Deleted Image"
-  type = bool
-  default = true
+  type        = bool
+  default     = true
 }

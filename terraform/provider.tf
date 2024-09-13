@@ -15,9 +15,9 @@ provider "aws" {
   region = "us-east-1"
 }
 resource "random_id" "version" {
- keepers = {
-  service_hash = local.service_file_hash
- }
+  keepers = {
+    service_hash = local.service_file_hash
+  }
 
- byte_length = 8
+  byte_length = 8
 }
