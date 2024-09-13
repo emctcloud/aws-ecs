@@ -13,11 +13,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Servir arquivos estáticos (como HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Configuração do banco de dados SQLite
-const db = new sqlite3.Database(':memory:');
+// Configuração do banco de dados SQLite (Persistente)
+const db = new sqlite3.Database('./data.db');  // Usando um arquivo persistente
 
 db.serialize(() => {
-    db.run("CREATE TABLE todos (id INTEGER PRIMARY KEY AUTOINCREMENT, task TEXT)");
+    db.run("CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, task TEXT)");
 });
 
 // Rota principal
@@ -29,6 +29,7 @@ app.get('/', (req, res) => {
 app.get('/todos', (req, res) => {
     db.all("SELECT * FROM todos", (err, rows) => {
         if (err) {
+            console.error('Erro ao listar tarefas:', err);
             res.status(500).json({ error: err.message });
             return;
         }
@@ -41,6 +42,7 @@ app.post('/todos', (req, res) => {
     const task = req.body.task;
     db.run("INSERT INTO todos (task) VALUES (?)", [task], function(err) {
         if (err) {
+            console.error('Erro ao adicionar tarefa:', err);
             res.status(500).json({ error: err.message });
             return;
         }
@@ -53,6 +55,7 @@ app.delete('/todos/:id', (req, res) => {
     const id = req.params.id;
     db.run("DELETE FROM todos WHERE id = ?", [id], function(err) {
         if (err) {
+            console.error('Erro ao excluir tarefa:', err);
             res.status(500).json({ error: err.message });
             return;
         }
@@ -60,8 +63,12 @@ app.delete('/todos/:id', (req, res) => {
     });
 });
 
+// Endpoint de verificação de saúde
+app.get('/healthcheck', (req, res) => {
+    res.status(200).send('OK');
+});
+
 // Iniciar o servidor
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
-

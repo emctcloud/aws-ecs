@@ -64,5 +64,5 @@ variable "ecs" {
 variable "log_level" {
   description = "Logging level"
   type        = string
-  default     = "info"
+  default     = "debug"
 }

@@ -47,26 +47,3 @@ resource "aws_ecs_task_definition" "this" {
     ]
   }])
 }
-
-resource "aws_ecs_service" "this" {
-  name = "ecs-service"
-  cluster = aws_ecs_cluster.this.id
-  task_definition = aws_ecs_task_definition.this.arn
-  desired_count = 2
-  launch_type = "FARGATE"
-  health_check_grace_period_seconds = 30
-  network_configuration {
-    subnets = [ aws_subnet.ecs_sub_priv_1a.id, aws_subnet.ecs_sub_priv_1b.id ]
-    security_groups = [ aws_security_group.ecs_tasks.id ]
-    assign_public_ip = false
-  }
-  load_balancer {
-    target_group_arn = aws_alb_target_group.this.id
-    container_name = "aws-ecs-container"
-    container_port = var.ecs.app_port
-  }
-  depends_on = [ aws_alb_listener.http ]
-  lifecycle {
-    ignore_changes = [ desired_count ]
-  }
-}
